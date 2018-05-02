@@ -1,7 +1,9 @@
 from lbp import LBP
 from Classifier import classifier
+import numpy as np
 import cv2
 import os
+from Classifier import classifier
 from time import time
 import numpy as np
 path = 'KL/Faces'
@@ -15,6 +17,7 @@ def ExtractFace(pathToData):
         images = os.listdir(pathToData +"/" + folder)
         for img in images:
             path = pathToData +"/"+ folder + "/" + img
+            # print path
             image = cv2.imread(path,0)
             ##            print type(image)
             # cv2.imshow("Training on image...", image)
@@ -28,30 +31,14 @@ def ExtractFace(pathToData):
             cv2.destroyAllWindows()
     return faces, labels
 if __name__ == '__main__':
-    image = cv2.imread("Capture.jpg",0)
-    lbp = LBP(image)
-    lbpImage,shape = lbp.createLBPImage()
-    hist =  lbp.Histogram(lbpImage,True)
-    faces,labels = ExtractFace(path)
-    print labels
-    hist_vectors = []
+    faces, labels = ExtractFace('KL/Faces')
+    lbp_images = []
     for face in faces:
-        start = time()
+        lbp = LBP(face)
+        lbp_image,_ = lbp.createLBPImage()
+        lbp_images.append(lbp.Histogram(lbp_image))
 
-        lbp=LBP(face)
-        lbpImage, shape = lbp.createLBPImage()
-        print "created LBP image in %f second" %(time()-start)
-        hist = lbp.Histogram(lbpImage, False)
-        hist_vectors.append(hist)
-
-    clf = classifier(hist_vectors,labels)
-    clf.train()
-    # test = cv2.imread("yaleB11_P00_Ambient.pgm",0)
-    test = cv2.imread("yaleB11_P00A+035E+15.pgm", 0)
-    # test = cv2.imread("images.jpg",0)
-    lbp = LBP(test)
-    lbpImage, shape = lbp.createLBPImage()
-    hist = lbp.Histogram(lbpImage, False)
-    hist = hist.reshape(1,-1)
-    label = clf.predict(hist)
-    print label
+    clf = classifier(lbp_images, labels)
+    clf.svm()
+    clf.random_forest()
+    clf.KNN()

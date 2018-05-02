@@ -33,8 +33,16 @@ class LBP():
         return lbp_image,lbp_image.shape
 
     def Histogram(self,lbp_image,normalize=True):
+        """
+
+        :rtype: object
+        """
         hist,_ = np.histogram(lbp_image,256,[0,256])
         if(normalize):
             hist = hist.astype("float")
             hist /= (hist.sum()+1e-7)
         return hist
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+    def __enter__(self):
+        pass
