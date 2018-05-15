@@ -9,10 +9,11 @@ class LBP():
 
     def createLBPImage(self):
         (rows, cols) = self.image.shape
-        lbp_image = np.zeros((rows,cols),np.uint8)
+        lbp_image = np.full((rows,cols),255,np.uint8)
 
-        for row in range(1, rows - 2):
-            for col in range(1, cols - 2):
+
+        for row in range(1, rows - 2,3):
+            for col in range(1, cols - 2,3):
 
                 center_point = self.image[row][col]
                 pixel7 = self.image[row - 1][col] > center_point
@@ -27,10 +28,17 @@ class LBP():
                 center_point = pixel7 * 128 + pixel6 * 64 + pixel5 * 32 + pixel4 * 16 + \
                                pixel3 * 8 + pixel2 * 4 + pixel1 * 2 + pixel0 * 1
                 # lbp_image[row][col] = center_point
-                lbp_image.itemset((row, col), center_point)
+                if (self.isUniform(center_point)):
+                    lbp_image.itemset((row, col), center_point)
         # lbp_image = feature.local_binary_pattern(self.image,8, 1,method='uniform')
 
         return lbp_image,lbp_image.shape
+    def isUniform(self,value):
+        s = bin(value)[2:]
+        count = 0;
+        count += s.count("01")
+        count += s.count("10")
+        return True if count < 2 else False
 
     def Histogram(self,lbp_image,normalize=True):
         """
